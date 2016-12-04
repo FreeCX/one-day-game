@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <algorithm>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -25,15 +26,8 @@ short pole[pole_size][pole_size];
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
-}
-
-void swap( short *i, short *j )
-{
-    short t = *i;
-    *i = *j;
-    *j = t;
 }
 
 void tile_draw( SDL_Renderer *r, SDL_Texture *tex, short id, int p )
@@ -55,28 +49,20 @@ void font_color( SDL_Texture *tex, Uint32 color )
     SDL_SetTextureColorMod( tex, color >> 16, ( color >> 8 ) & 0xFF, color & 0xFF );
 }
 
-void font_draw( SDL_Renderer *r, SDL_Texture *tex, char *text, int p )
+void font_draw( SDL_Renderer *r, SDL_Texture *tex, short text, int p )
 {
     SDL_Rect wnd = { 0, 0, font_size, font_size };
     SDL_Rect pos = { 0, 0, font_size, font_size };
-    int i = 0, current;
     short x = p % pole_size;
     short y = p / pole_size;
 
-    if ( strcmp( text, "16" ) == 0 ) {
+    if ( text == 16 ) {
         return;
     }
-    if ( strlen( text ) > 1 ) {
-        pos.x = x * tile_size + tile_shift_x + font_size / 4; 
-    } else {
-        pos.x = x * tile_size + tile_shift_x + font_size / 2; 
-    }
+    pos.x = x * tile_size + tile_shift_x + font_size / 2;
     pos.y = y * tile_size + tile_shift_y + font_size / 2;
-    while ( ( current = text[i++] ) != '\0' ) {
-        wnd.x = ( current - '0' ) * font_size;
-        SDL_RenderCopy( r, tex, &wnd, &pos );
-        pos.x += font_size / 2;
-    }
+    wnd.x = (text - 1) * font_size;
+    SDL_RenderCopy( r, tex, &wnd, &pos );
 }
 
 void game_restart( void )
@@ -90,7 +76,19 @@ void game_restart( void )
         if ( rnd_1 == rnd_2 ) {
             rnd_2 = (rnd_1 + 1) % two_pole_size;
         }
-        swap( *pole + rnd_1, *pole + rnd_2 );
+        std::swap( *(*pole + rnd_1), *(*pole + rnd_2) );
+    }
+    short incorrect = 0;
+    for (short i = 0; i < two_pole_size; i++) {
+        for (short j = i+1; j < two_pole_size; j++) {
+            if (*(*pole + i) > *(*pole + j)) {
+                incorrect ^= 1;
+            }
+        }
+    }
+    if (incorrect) {
+        std::cout << "OMG!!!" << std::endl;
+        game_restart();
     }
 }
 
@@ -156,6 +154,9 @@ void game_event( SDL_Event *event )
                         pole[y][x-1] = 16;
                     }
                     break;
+                case SDLK_r:
+                    game_restart();
+                    break;
             }
             break;
     }
@@ -180,13 +181,10 @@ void game_loop( void )
 
 void game_render( void )
 {
-    char buff[2];
-
     SDL_RenderClear( render );
     for ( short i = 0; i < two_pole_size; i++ ) {
-        sprintf( buff, "%d", *( *pole + i ) );
         tile_draw( render, tile, *( *pole + i ), i );
-        font_draw( render, font, buff, i );
+        font_draw( render, font, *( *pole + i ), i );
     }
     SDL_RenderPresent( render );
 }
@@ -214,7 +212,7 @@ void game_init( void )
     }
     tile = IMG_LoadTexture( render, "./images/tiles.png" );
     font = IMG_LoadTexture( render, "./images/font.png" );
-    font_color( font, 0xe0c0b0 );
+    font_color( font, 0xf0c090 );
     srand( time( NULL ) );
     game_restart();
 }
