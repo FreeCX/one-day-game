@@ -50,6 +50,11 @@ void tile_draw( SDL_Renderer *r, SDL_Texture *tex, short id, int p )
     SDL_RenderCopy( r, tex, &wnd, &pos );
 }
 
+void font_color( SDL_Texture *tex, Uint32 color )
+{
+    SDL_SetTextureColorMod( tex, color >> 16, ( color >> 8 ) & 0xFF, color & 0xFF );
+}
+
 void font_draw( SDL_Renderer *r, SDL_Texture *tex, char *text, int p )
 {
     SDL_Rect wnd = { 0, 0, font_size, font_size };
@@ -80,15 +85,17 @@ void game_restart( void )
         *( *pole + i ) = i+1;
     }
     for ( short i = 0; i < two_pole_size; i++ ) {
-        swap( *pole + ( rand() % two_pole_size ), 
-              *pole + ( rand() % two_pole_size ) );
+        short rnd_1 = rand() % two_pole_size;
+        short rnd_2 = rand() % two_pole_size;
+        if ( rnd_1 == rnd_2 ) {
+            rnd_2 = (rnd_1 + 1) % two_pole_size;
+        }
+        swap( *pole + rnd_1, *pole + rnd_2 );
     }
 }
 
 void game_event( SDL_Event *event )
 {
-    int x, y;
-
     SDL_PollEvent( event );
     switch ( event->type ) {
         case SDL_QUIT:
@@ -97,8 +104,8 @@ void game_event( SDL_Event *event )
         case SDL_MOUSEBUTTONDOWN:
             switch ( event->button.button ) {
                 case SDL_BUTTON_LEFT:
-                    x = ( event->button.x - tile_shift_x ) / tile_size;
-                    y = ( event->button.y - tile_shift_y ) / tile_size;
+                    short x = ( event->button.x - tile_shift_x ) / tile_size;
+                    short y = ( event->button.y - tile_shift_y ) / tile_size;
                     for ( short i = 0; i < 8; i += 2 ) {
                         short it_move = pole[y+moves[i+1]][x+moves[i+0]] == 16 && 
                             x + moves[i+0] < pole_size && x + moves[i+0] >= 0 &&
@@ -110,11 +117,50 @@ void game_event( SDL_Event *event )
                     }
                     break;
             }
-            event->button.button = 0; // button hack
             break;
-        default:
+        case SDL_KEYDOWN:
+            short id = 0;
+            for ( int i = 0; i < two_pole_size; i++ ) {
+                if ( *(*pole + i) == 16 ) {
+                    id = i;
+                }
+            }
+            short x = id % pole_size;
+            short y = id / pole_size;
+            switch ( event->key.keysym.sym ) {
+                case SDLK_UP:
+                case SDLK_w:
+                    if (y < 3) {
+                        pole[y][x] = pole[y+1][x];
+                        pole[y+1][x] = 16;
+                    }
+                    break;
+                case SDLK_DOWN:
+                case SDLK_s:
+                    if (y > 0) {
+                        pole[y][x] = pole[y-1][x];
+                        pole[y-1][x] = 16;
+                    }
+                    break;
+                case SDLK_LEFT:
+                case SDLK_a:
+                    if (x < 3) {
+                        pole[y][x] = pole[y][x+1];
+                        pole[y][x+1] = 16;
+                    }
+                    break;
+                case SDLK_RIGHT:
+                case SDLK_d:
+                    if (x > 0) {
+                        pole[y][x] = pole[y][x-1];
+                        pole[y][x-1] = 16;
+                    }
+                    break;
+            }
             break;
     }
+    event->button.button = 0;
+    event->key.keysym.sym = 0;
 }
 
 void game_loop( void )
@@ -168,6 +214,7 @@ void game_init( void )
     }
     tile = IMG_LoadTexture( render, "./images/tiles.png" );
     font = IMG_LoadTexture( render, "./images/font.png" );
+    font_color( font, 0xe0c0b0 );
     srand( time( NULL ) );
     game_restart();
 }
