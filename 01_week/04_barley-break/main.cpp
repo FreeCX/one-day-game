@@ -126,6 +126,10 @@ void game_event( SDL_Event *event )
             short x = id % pole_size;
             short y = id / pole_size;
             switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
                 case SDLK_UP:
                 case SDLK_w:
                     if (y < 3) {
