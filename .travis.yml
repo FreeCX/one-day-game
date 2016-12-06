@@ -4,7 +4,7 @@ dist: trusty
 before_install:
   - sudo apt-get install build-essential libsdl2-dev libsdl2-image-dev
 script:
-  - make compile
+  - make all
 before_deploy:
   - mkdir -p build/01_week/{01_tic-tac-toe,02_memory-game,03_plumber,04_barley-break}
   - mkdir -p build/02_week/{01_survival,02_time-attack,03_horizontal-scroll,04_vertical-scroll}
