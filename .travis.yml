@@ -18,6 +18,7 @@ before_deploy:
   - cp -r 02_week/02_time-attack/{images,time-attack} build/02_week/02_time-attack/
   - cp -r 02_week/03_horizontal-scroll/{images,horizontal-scroll} build/02_week/03_horizontal-scroll/
   - cp -r 02_week/04_vertical-scroll/{images,vertical-scroll} build/02_week/04_vertical-scroll/
+  - cp LICENCE build/
   - zip -9 -r linux_build.zip build/
 deploy:
   provider: releases
