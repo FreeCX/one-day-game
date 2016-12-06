@@ -26,15 +26,8 @@ short card_s = 0;
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
-}
-
-void swap( short *i, short *j )
-{
-    short t = *i;
-    *i = *j;
-    *j = t;
 }
 
 void game_restart( void )
@@ -45,7 +38,7 @@ void game_restart( void )
         card[i+1] = ( i / 2 ) + 1;
     }
     for ( short i = 0; i < pole_size; i++ ) {
-        swap( &card[rand() % pole_size], &card[rand() % pole_size] );
+        std::swap( card[rand() % pole_size], card[rand() % pole_size] );
     }
 }
 
@@ -85,9 +78,23 @@ void game_event( SDL_Event *event )
                     }
                     break;
             }
-            event->button.button = 0; // button hack
+            break;
+        case SDL_KEYDOWN:
+            switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_r:
+                    game_restart();
+                    break;
+            }
+            break;
+        default:
             break;
     }
+    event->button.button = 0;
+    event->key.keysym.sym = 0;
 }
 
 void game_loop( void )

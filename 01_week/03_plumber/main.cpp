@@ -3,6 +3,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+
 const char game_name[] = "plumber";
 const int screen_width = 640;
 const int screen_height = 480;
@@ -39,7 +40,7 @@ short game_check_init = 0;
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
 }
 
@@ -144,12 +145,12 @@ void game_check( void )
     step_count++;
     switch ( game_state ) {
         case GAME_ERROR:
-            std::cout << "WATER PATH ERROR!\n";
+            std::cout << "WATER PATH ERROR!" << std::endl;
             game_state = GAME_IDLE;
             memset( color, 0, sizeof( color ) );
             break;
         case GAME_WIN:
-            std::cout << "GAME OVER: WIN!\n";
+            std::cout << "GAME OVER: WIN!" << std::endl;
             game_state = GAME_IDLE;
             game_restart();
             break;
@@ -186,9 +187,27 @@ void game_event( SDL_Event *event )
                     game_check();
                     break;
             }
-            event->button.button = 0; // button hack
+            break;
+        case SDL_KEYDOWN:
+            switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_SPACE:
+                    game_check();
+                    break;
+                case SDLK_r:
+                    game_restart();
+                    break;
+            }
+            break;
+        default:
             break;
     }
+    // SDL2 button hack
+    event->button.button = 0;
+    event->key.keysym.sym = 0;
 }
 
 void game_loop( void )

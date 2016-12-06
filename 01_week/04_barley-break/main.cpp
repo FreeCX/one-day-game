@@ -178,7 +178,7 @@ void game_loop( void )
         }
     }
     if ( count == two_pole_size ) {
-        std::cout << "GAME OVER: WIN!\n";
+        std::cout << "GAME OVER: WIN!" << std::endl;
         game_restart();
     }
 }

@@ -97,8 +97,16 @@ bool is_intersect( int x11, int y11, int x21, int y21 )
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
+}
+
+void game_restart( void )
+{
+    enemy.clear();
+    bullet.clear();
+    player_life = 10;
+    game_cycle = game_score = game_time = 0;
 }
 
 void game_event( SDL_Event *event )
@@ -129,19 +137,22 @@ void game_event( SDL_Event *event )
                     game_add_bullet( player_x, player_y, dx, dy );
                     break;
             }
-            event->button.button = 0; // button hack
+            break;
+        case SDL_KEYDOWN:
+            switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_r:
+                    game_restart();
+                    break;
+            }
             break;
         default:
             break;
     }
-}
-
-void game_restart( void )
-{
-    enemy.clear();
-    bullet.clear();
-    player_life = 10;
-    game_cycle = game_score = game_time = 0;
+    event->button.button = 0;
 }
 
 void game_loop( void )

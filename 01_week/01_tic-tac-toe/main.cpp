@@ -46,6 +46,11 @@ void element_draw( SDL_Renderer *r, SDL_Texture *tex, short id, int p )
     SDL_RenderCopy( r, tex, &wnd, &pos );
 }
 
+void game_restart( void )
+{
+    memset( game_pole, 0, sizeof( game_pole ) );
+}
+
 void game_event( SDL_Event *event )
 {
     int x, y;
@@ -65,17 +70,25 @@ void game_event( SDL_Event *event )
                         game_pole[x] = 1;
                         player_step = 0;
                     }
-                    event->button.button = 0; // button hack
                     break;
             }
+        case SDL_KEYDOWN:
+            switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_r:
+                    game_restart();
+                    break;
+            }
+            break;
         default:
             break;
     }
-}
-
-void game_restart( void )
-{
-    memset( game_pole, 0, sizeof( game_pole ) );
+    // SDL2 button hack
+    event->button.button = 0;
+    event->key.keysym.sym = 0;
 }
 
 void pc_step( void )
@@ -179,8 +192,8 @@ int main( int argc, char *argv[] )
     game_init();
     while ( quit_flag == false ) {
         game_event( &event );
-        game_loop();
         game_render();
+        game_loop();
         SDL_Delay( FPS_MAX );
     }
     game_destroy();

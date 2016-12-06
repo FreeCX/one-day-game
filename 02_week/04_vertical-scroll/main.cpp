@@ -204,8 +204,18 @@ bool is_intersect( int x11, int y11, int x21, int y21, int xsize, int ysize )
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
+}
+
+void game_restart( void )
+{
+    star_init();
+    laser.clear();
+    enemy.clear();
+    meteor.clear();
+    player_life = 100;
+    game_cycle = game_score = 0;
 }
 
 void game_event( SDL_Event *event )
@@ -227,21 +237,22 @@ void game_event( SDL_Event *event )
                                true );
                     break;
             }
-            event->button.button = 0; // button hack
+            break;
+        case SDL_KEYDOWN:
+            switch ( event->key.keysym.sym ) {
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_r:
+                    game_restart();
+                    break;
+            }
             break;
         default:
             break;
     }
-}
-
-void game_restart( void )
-{
-    star_init();
-    laser.clear();
-    enemy.clear();
-    meteor.clear();
-    player_life = 100;
-    game_cycle = game_score = 0;
+    event->button.button = 0; // button hack
 }
 
 void game_loop( void )
@@ -366,7 +377,7 @@ void game_loop( void )
         }
     }
     if ( player_life <= 0 ) {
-        std::cout << "GAME OVER!\nScore: " << game_score << "\n"; 
+        std::cout << "GAME OVER!\nScore: " << game_score << std::endl; 
         game_restart();
     }
     if ( game_cycle % 40 == 0 ) {

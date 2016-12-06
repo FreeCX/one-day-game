@@ -31,4 +31,4 @@ clean:
 	@- $(foreach project,$(projects), \
 		$(MAKE) -C $(project) clean;\
 	)
-	$(RM) build/ linux_build.zip
+	$(RM) -r build/ linux_build.zip

@@ -50,7 +50,7 @@ const int unit_size = 32;
 const int bullet_size = 8;
 const int blood_size = 64;
 const int max_ammo = 12;
-const int player_step = 8;
+const int player_step = 2;
 bool quit_flag = false;
 
 SDL_Window *window = NULL;
@@ -149,12 +149,21 @@ void tile_draw( SDL_Renderer *r, SDL_Texture *tex, int id, int size, int x, int 
 
 void send_error( int code )
 {
-    std::cout << SDL_GetError() << "\n";
+    std::cout << SDL_GetError() << std::endl;
     exit( code );
+}
+
+void game_restart( void )
+{
+    std::cout << "GAME OVER: YOU'RE DEAD!" << std::endl;
+    game_cycle = game_score = 0;
+    game_struct_init();
 }
 
 void game_event( SDL_Event *event )
 {
+    static short keycode_repeat = 5;
+    static int last_keycode = 0;
     int x, y;
     float dx, dy, norm;
 
@@ -165,17 +174,32 @@ void game_event( SDL_Event *event )
             break;
         case SDL_KEYDOWN:
             switch ( event->key.keysym.sym ) {
-                case SDLK_w:
+                case SDLK_UP:
                     player.y -= player_step;
+                    last_keycode = SDLK_UP;
+                    keycode_repeat = 5;
                     break;
-                case SDLK_s:
+                case SDLK_DOWN:
                     player.y += player_step;
+                    last_keycode = SDLK_DOWN;
+                    keycode_repeat = 5;
                     break;
-                case SDLK_a:
+                case SDLK_LEFT:
                     player.x -= player_step;
+                    last_keycode = SDLK_LEFT;
+                    keycode_repeat = 5;
                     break;
-                case SDLK_d:
+                case SDLK_RIGHT:
                     player.x += player_step;
+                    last_keycode = SDLK_RIGHT;
+                    keycode_repeat = 5;
+                    break;
+                case SDLK_ESCAPE:
+                case SDLK_q:
+                    quit_flag = true;
+                    break;
+                case SDLK_r:
+                    game_restart();
                     break;
             }
             break;
@@ -194,18 +218,28 @@ void game_event( SDL_Event *event )
                     }
                     break;
             }
-            event->button.button = 0; // button hack
             break;
         default:
             break;
     }
-}
-
-void game_restart( void )
-{
-    std::cout << "GAME OVER: YOU'RE DEAD!\n";
-    game_cycle = game_score = 0;
-    game_struct_init();
+    if (keycode_repeat) {
+        switch (last_keycode) {
+            case SDLK_UP:
+                player.y -= player_step;
+                break;
+            case SDLK_DOWN:
+                player.y += player_step;
+                break;
+            case SDLK_LEFT:
+                player.x -= player_step;
+                break;
+            case SDLK_RIGHT:
+                player.x += player_step;
+                break;
+        }
+        keycode_repeat -= 1;
+    }
+    event->button.button = 0;
 }
 
 bool is_intersect( int x11, int y11, int x21, int y21 )
