@@ -1,0 +1,31 @@
+language: cpp
+sudo: required
+dist: trusty
+before_install:
+  - sudo apt-get install build-essential libsdl2-dev libsdl2-image-dev
+script:
+  - make compile
+before_deploy:
+  - mkdir -p build/01_week/{01_tic-tac-toe,02_memory-game,03_plumber,04_barley-break}
+  - mkdir -p build/02_week/{01_survival,02_time-attack,03_horizontal-scroll,04_vertical-scroll}
+  - mkdir -p build/00_other/
+  - cp -r 00_other/{images/,font.cfg} build/00_other/
+  - cp -r 01_week/01_tic-tac-toe/{images,tic-tac-toe} build/01_week/01_tic-tac-toe/
+  - cp -r 01_week/02_memory-game/{images,memory-game} build/01_week/02_memory-game/
+  - cp -r 01_week/03_plumber/{images,plumber} build/01_week/03_plumber/
+  - cp -r 01_week/04_barley-break/{images,barley-break} build/01_week/04_barley-break/
+  - cp -r 02_week/01_survival/{images,survival} build/02_week/01_survival/
+  - cp -r 02_week/02_time-attack/{images,time-attack} build/02_week/02_time-attack/
+  - cp -r 02_week/03_horizontal-scroll/{images,horizontal-scroll} build/02_week/03_horizontal-scroll/
+  - cp -r 02_week/04_vertical-scroll/{images,vertical-scroll} build/02_week/04_vertical-scroll/
+  - zip -9 -r linux_build.zip build/
+deploy:
+  provider: releases
+  api_key:
+    secure: 8dYRwdjMnSfxf+xy9xkTXatTKOTohu1/NFXbESjKpfuqHuqcYzhobzKBxAQRlkuZxJ2TmxH9R7x40ocWRo8DbAVUcwq+fgoG4Sgnha1J+a5AHmA7tgGUldo+rC/F/B/um5TqOtd/tVBSO8kGD0S+dCS5IDmjNcjXGqTbQBvGEDis/RiQdMGdy11cnlYtul1EB6HPR5/1QNsHcppbv06Xyo6Kj0rDgae5puCUsUUKXfl8LZVAoiHmxPo5wyuttvsq0tY+jiwa0hJJlf/pYgAFszLZhoVUTxehLhPqE3JwAmfs7K7DcqHqURETBtkc/yEXdbld1ty41Yk37glb6/Vj776kibOgxX2YRB58v2smZUenmfyAE1U9M6422ssFj4t7PlNzh2hsBSXWiDzvxuCco2scn9hEWOmYsUDzkaMkrahF7rE8llHPLF9SiXiTOHiOzRgPkqu/soESoOU8WXpVNlTgdLSbtWfPuCckleGm11N5w22ems5/2iMaGzZiMEHuRSpj18aWa+JTyd80mNKJ9owYAL2C1C5U2z4mqbfHjhsOLPD4/SS0zith1Vkm0lEBpCgBMP8Tve6S5p5eQYx1WUoGicSTO1CR03MDnbYS+BMKwtOsVpBbgTQRq5P1HBWuwqU/sQcMEcOeHe6IBPqbSBcJyI+v83JTbKXiMh3CwLE=
+  file: linux_build.zip
+  skip_cleanup: true
+  on:
+    tags: true
+after_script:
+  - make clean
