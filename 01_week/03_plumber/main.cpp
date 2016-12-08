@@ -7,11 +7,11 @@
 #include "../../00_other/font.h"
 
 const wchar_t game_info_text[] = 
-    L"F1          -- this page\n"
-    L"escape / q  -- exit\n"
-    L"r           -- reset puzzle\n"
-    L"LBK         -- rotate plumb\n"
-    L"RBK / Space -- check\n";
+    L"F1          -- THIS PAGE\n"
+    L"ESCAPE / Q  -- EXIT\n"
+    L"R           -- RESET GAME\n"
+    L"LBK         -- ROTATE PLUMB\n"
+    L"RBK / SPACE -- CHECK\n";
 const char game_name[] = "plumber";
 const int screen_width = 640;
 const int screen_height = 480;

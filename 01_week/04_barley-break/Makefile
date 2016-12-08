@@ -1,5 +1,5 @@
 NAME=barley-break
-SOURCE=main.cpp
+SOURCE=main.cpp ../../00_other/font.cpp
 OS=$(shell uname -s)
 
 ifneq ($(OS),Linux)

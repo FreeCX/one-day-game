@@ -98,7 +98,7 @@ void font_draw( SDL_Renderer *r, font_table_t *t, const wchar_t *text, int x, in
                 pos.x += 2 * t->t_width;
                 continue;
             // to upper
-            case 'a'...'z':
+            // case 'a'...'z':
             case L'а'...L'я':
                 current -= 0x20;
                 break;

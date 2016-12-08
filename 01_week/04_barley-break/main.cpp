@@ -2,9 +2,19 @@
 #include <ctime>
 #include <iostream>
 #include <algorithm>
+#include <wchar.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "../../00_other/font.h"
 
+const wchar_t game_info_text[] = 
+    L"F1          -- THIS PAGE\n"
+    L"ESCAPE / Q  -- EXIT\n"
+    L"R           -- RESTART GAME\n"
+    L"u / W       -- MOVE UP\n"
+    L"d / S       -- MOVE DOWN\n"
+    L"l / A       -- MOVE LEFT\n"
+    L"r / D       -- MOVE RIGHT\n";
 const char game_name[] = "barley-break";
 const int screen_width = 640;
 const int screen_height = 480;
@@ -16,6 +26,7 @@ const int tile_shift_x = ( screen_width - pole_size * tile_size ) / 2;
 const int tile_shift_y = ( screen_height - pole_size * tile_size ) / 2;
 const short moves[8] = { -1, +0, +1, +0, +0, -1, +0, +1 };
 bool quit_flag = false;
+bool draw_game_info = false;
 
 SDL_Window *window = NULL;
 SDL_Renderer *render = NULL;
@@ -23,6 +34,8 @@ SDL_Event event;
 SDL_Texture *tile = NULL, *font = NULL;
 
 short pole[pole_size][pole_size];
+
+font_table_t *ft = NULL;
 
 void send_error( int code )
 {
@@ -161,6 +174,9 @@ void game_event( SDL_Event *event )
                 case SDLK_r:
                     game_restart();
                     break;
+                case SDLK_F1:
+                    draw_game_info = !draw_game_info;
+                    break;
             }
             break;
     }
@@ -190,11 +206,19 @@ void game_render( void )
         tile_draw( render, tile, *( *pole + i ), i );
         font_draw( render, font, *( *pole + i ), i );
     }
+    if (draw_game_info) {
+        SDL_Rect rectangle = { screen_width / 3, screen_height / 2 - 50, 230, 70 };
+        SDL_SetRenderDrawColor( render, 0, 0, 255, 0 );
+        SDL_RenderFillRect( render, &rectangle );
+        SDL_SetRenderDrawColor( render, 0, 0, 0, 0 );
+        font_draw(render, ft, game_info_text, screen_width / 3, screen_height / 2 - 45 );
+    }
     SDL_RenderPresent( render );
 }
 
 void game_destroy( void )
 {
+    font_destroy( ft );
     SDL_DestroyTexture( tile );
     SDL_DestroyTexture( font );
     SDL_DestroyRenderer( render );
@@ -218,6 +242,8 @@ void game_init( void )
     font = IMG_LoadTexture( render, "./images/font.png" );
     font_color( font, 0xf0c090 );
     srand( time( NULL ) );
+    font_load( render, &ft, "../../00_other/font.cfg" );
+    set_color( ft->font, 0xffffff );
     game_restart();
 }
 
