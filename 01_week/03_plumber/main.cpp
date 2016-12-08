@@ -1,9 +1,17 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <wchar.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "../../00_other/font.h"
 
+const wchar_t game_info_text[] = 
+    L"F1          -- this page\n"
+    L"escape / q  -- exit\n"
+    L"r           -- reset puzzle\n"
+    L"LBK         -- rotate plumb\n"
+    L"RBK / Space -- check\n";
 const char game_name[] = "plumber";
 const int screen_width = 640;
 const int screen_height = 480;
@@ -13,6 +21,7 @@ const int two_pole_size = pole_size * pole_size;
 const int tile_shift_x = ( screen_width - pole_size * tile_size ) / 2;
 const int tile_shift_y = ( screen_height - pole_size * tile_size ) / 2;
 bool quit_flag = false;
+bool draw_game_info = false;
 
 enum {
     E_DRAIN = 0,
@@ -37,6 +46,8 @@ SDL_Texture *tiles = NULL;
 short pole[pole_size][pole_size];
 short color[two_pole_size];
 short game_check_init = 0;
+
+font_table_t *ft = NULL;
 
 void send_error( int code )
 {
@@ -200,6 +211,9 @@ void game_event( SDL_Event *event )
                 case SDLK_r:
                     game_restart();
                     break;
+                case SDLK_F1:
+                    draw_game_info = !draw_game_info;
+                    break;
             }
             break;
         default:
@@ -228,11 +242,19 @@ void game_render( void )
         }
         tile_draw( render, tiles, pole[i%pole_size][i/pole_size], i );
     }
+    if (draw_game_info) {
+        SDL_Rect rectangle = { screen_width / 3, screen_height / 2 - 50, 230, 50 };
+        SDL_SetRenderDrawColor( render, 0, 0, 255, 0 );
+        SDL_RenderFillRect( render, &rectangle );
+        SDL_SetRenderDrawColor( render, 0, 0, 0, 0 );
+        font_draw(render, ft, game_info_text, screen_width / 3, screen_height / 2 - 45 );
+    }
     SDL_RenderPresent( render );
 }
 
 void game_destroy( void )
 {
+    font_destroy( ft );
     SDL_DestroyTexture( tiles );
     SDL_DestroyRenderer( render );
     SDL_DestroyWindow( window );
@@ -253,6 +275,8 @@ void game_init( void )
     }
     tiles = IMG_LoadTexture( render, "./images/tiles.png" );
     srand( time( NULL ) );
+    font_load( render, &ft, "../../00_other/font.cfg" );
+    set_color( ft->font, 0xffffff );
     game_restart();
 }
 
