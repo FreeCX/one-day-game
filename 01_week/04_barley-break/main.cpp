@@ -69,12 +69,12 @@ void game_restart( void )
 {
     for ( short i = 0; i < two_pole_size; i++ ) {
         *( *pole + i ) = i+1;
-    }
+    } 
     for ( short i = 0; i < two_pole_size; i++ ) {
-        short rnd_1 = rand() % two_pole_size;
-        short rnd_2 = rand() % two_pole_size;
+        short rnd_1 = rand() % (two_pole_size - 1);
+        short rnd_2 = rand() % (two_pole_size - 1);
         if ( rnd_1 == rnd_2 ) {
-            rnd_2 = (rnd_1 + 1) % two_pole_size;
+            rnd_2 = (rnd_1 + 1) % (two_pole_size - 1);
         }
         std::swap( *(*pole + rnd_1), *(*pole + rnd_2) );
     }
