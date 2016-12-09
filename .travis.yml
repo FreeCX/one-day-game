@@ -11,7 +11,7 @@ deploy:
   provider: releases
   api_key:
     secure: 8dYRwdjMnSfxf+xy9xkTXatTKOTohu1/NFXbESjKpfuqHuqcYzhobzKBxAQRlkuZxJ2TmxH9R7x40ocWRo8DbAVUcwq+fgoG4Sgnha1J+a5AHmA7tgGUldo+rC/F/B/um5TqOtd/tVBSO8kGD0S+dCS5IDmjNcjXGqTbQBvGEDis/RiQdMGdy11cnlYtul1EB6HPR5/1QNsHcppbv06Xyo6Kj0rDgae5puCUsUUKXfl8LZVAoiHmxPo5wyuttvsq0tY+jiwa0hJJlf/pYgAFszLZhoVUTxehLhPqE3JwAmfs7K7DcqHqURETBtkc/yEXdbld1ty41Yk37glb6/Vj776kibOgxX2YRB58v2smZUenmfyAE1U9M6422ssFj4t7PlNzh2hsBSXWiDzvxuCco2scn9hEWOmYsUDzkaMkrahF7rE8llHPLF9SiXiTOHiOzRgPkqu/soESoOU8WXpVNlTgdLSbtWfPuCckleGm11N5w22ems5/2iMaGzZiMEHuRSpj18aWa+JTyd80mNKJ9owYAL2C1C5U2z4mqbfHjhsOLPD4/SS0zith1Vkm0lEBpCgBMP8Tve6S5p5eQYx1WUoGicSTO1CR03MDnbYS+BMKwtOsVpBbgTQRq5P1HBWuwqU/sQcMEcOeHe6IBPqbSBcJyI+v83JTbKXiMh3CwLE=
-  file: linux_build.zip
+  file: linux_build.tar.gz
   skip_cleanup: true
   on:
     tags: true

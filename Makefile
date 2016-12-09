@@ -26,9 +26,9 @@ deploy:
 	cp -r 02_week/03_horizontal-scroll/{images,horizontal-scroll} build/02_week/03_horizontal-scroll/
 	cp -r 02_week/04_vertical-scroll/{images,vertical-scroll} build/02_week/04_vertical-scroll/
 	cp LICENSE build/
-	zip -9 -r linux_build.zip build/
+	tar czvf linux_build.tar.gz build/
 clean:
 	@- $(foreach project,$(projects), \
 		$(MAKE) -C $(project) clean;\
 	)
-	$(RM) -r build/ linux_build.zip
+	$(RM) -r build/ linux_build.tar.gz
